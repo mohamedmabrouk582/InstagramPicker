@@ -198,28 +198,32 @@ public class GalleryFragment extends Fragment {
 
 
             if (!selectedPic.isEmpty()) {
-                if (InstagramPicker.hasCrop){
+               // if (InstagramPicker.hasCrop){
                      CropImage.activity(Uri.parse(selectedPic))
                         .setAspectRatio(x, y)
                         .start(context, this);
-                }else {
-                    Intent in = new Intent(requireContext(), FilterActivity.class);
-                    FilterActivity.picAddress = Uri.parse(selectedPic);
-                    FilterActivity.position = 0;
-                    startActivityForResult(in, 123);
-                }
+//                }else {
+//                    Intent in = new Intent(requireContext(), FilterActivity.class);
+//                    FilterActivity.picAddress = Uri.parse(selectedPic);
+//                    FilterActivity.position = 0;
+//                    startActivityForResult(in, 123);
+//                }
 
             } else if (selectedPics.size() == 1) {
-                if (InstagramPicker.hasCrop){
+                //if (InstagramPicker.hasCrop){
                     CropImage.activity(Uri.parse(selectedPics.get(0)))
                             .setAspectRatio(x, y)
                             .start(context, this);
-                }else {
-                    Intent in = new Intent(requireContext(), FilterActivity.class);
-                    FilterActivity.picAddress = Uri.parse(selectedPics.get(0));
-                    FilterActivity.position = 0;
-                    startActivityForResult(in, 123);
-                }
+//                }else {
+//                    Intent i = new Intent(getActivity(), MultiSelectActivity.class);
+//                    MultiSelectActivity.addresses = selectedPics;
+//                    startActivity(i);
+//                    activity.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim);
+////                    Intent in = new Intent(requireContext(), FilterActivity.class);
+////                    FilterActivity.picAddress = Uri.parse(selectedPics.get(0));
+////                    FilterActivity.position = 0;
+////                    startActivityForResult(in, 123);
+//                }
 
             } else if (selectedPics.size() > 1) {
                 Intent i = new Intent(getActivity(), MultiSelectActivity.class);
