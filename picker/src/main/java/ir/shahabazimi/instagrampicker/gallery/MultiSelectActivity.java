@@ -62,9 +62,16 @@ public class MultiSelectActivity extends AppCompatActivity {
         ultraViewPager.setScrollMode(UltraViewPager.ScrollMode.HORIZONTAL);
         MultiSelectImageAdapter adapter = new MultiSelectImageAdapter(this, addressesList, (a, p) -> {
             position = p;
-            CropImage.activity(Uri.parse(a))
+            if (InstagramPicker.hasCrop){
+                CropImage.activity(Uri.parse(a))
                     .setAspectRatio(4, 3)
                     .start(this);
+            }else {
+                Intent in = new Intent(this, FilterActivity.class);
+                FilterActivity.picAddress = Uri.parse(a);
+                FilterActivity.position = 0;
+                startActivityForResult(in, 123);
+            }
 
         });
         ultraViewPager.setAdapter(adapter);

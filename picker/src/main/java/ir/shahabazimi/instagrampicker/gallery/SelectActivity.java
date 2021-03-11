@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+
 import ir.shahabazimi.instagrampicker.classes.BackgroundActivity;
 import ir.shahabazimi.instagrampicker.classes.MySharedPreference;
 import ir.shahabazimi.instagrampicker.R;
@@ -22,6 +25,7 @@ public class SelectActivity extends AppCompatActivity {
 
     private final int CAMERA_PERMISSION_REQ = 236;
     private final int STORAGE_PERMISSION_REQ = 326;
+    private ArrayList<String> selectedUrls=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,9 @@ public class SelectActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         BackgroundActivity.getInstance().setActivity(this);
         BottomNavigationView bnv = findViewById(R.id.select_bnv);
-
+        try {
+            selectedUrls.addAll(getIntent().getStringArrayListExtra("SELECTED_IMG"));
+        }catch (Exception e){}
         bnv.setOnNavigationItemSelectedListener(mi -> {
 
             int itemId = mi.getItemId();
@@ -66,7 +72,8 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.select_container, new GalleryFragment())
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.select_container,GalleryFragment.getInstance(selectedUrls))
                 .commit();
     }
 

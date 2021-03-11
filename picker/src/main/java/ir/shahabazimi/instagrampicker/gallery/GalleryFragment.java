@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,7 +31,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -59,11 +62,19 @@ public class GalleryFragment extends Fragment {
     private FragmentActivity activity;
 
 
+    public static GalleryFragment getInstance(ArrayList<String> imgs){
+        GalleryFragment fragment=new GalleryFragment();
+        Bundle bundle=new Bundle();
+        bundle.putStringArrayList("SELECTED_IMG",imgs);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_gallery, container, false);
+        View v = inflater.inflate(InstagramPicker.hasShowHeader?R.layout.fragment_gallery_with_header:R.layout.fragment_gallery, container, false);
         context = getContext();
         activity = getActivity();
         assert activity != null;
@@ -71,10 +82,15 @@ public class GalleryFragment extends Fragment {
         assert actionBar != null;
         actionBar.setTitle(getString(R.string.instagrampicker_gallery_title));
         setHasOptionsMenu(true);
+        try {
+            selectedPics= getArguments().getStringArrayList("SELECTED_IMG");
+        }catch (Exception e){}
 
         multiSelectBtn = v.findViewById(R.id.gallery_multiselect);
         if (!InstagramPicker.multiSelect) {
             multiSelectBtn.setVisibility(View.GONE);
+        }else {
+            multiSelect=true;
         }
         multiSelectBtn.setOnClickListener(w -> {
 
@@ -180,15 +196,31 @@ public class GalleryFragment extends Fragment {
             int y = InstagramPicker.y;
 
 
-            if (!selectedPic.isEmpty()) {
-                CropImage.activity(Uri.parse(selectedPic))
-                        .setAspectRatio(x, y)
-                        .start(context, this);
-            } else if (selectedPics.size() == 1) {
 
-                CropImage.activity(Uri.parse(selectedPics.get(0)))
+            if (!selectedPic.isEmpty()) {
+                if (InstagramPicker.hasCrop){
+                     CropImage.activity(Uri.parse(selectedPic))
                         .setAspectRatio(x, y)
                         .start(context, this);
+                }else {
+                    Intent in = new Intent(requireContext(), FilterActivity.class);
+                    FilterActivity.picAddress = Uri.parse(selectedPic);
+                    FilterActivity.position = 0;
+                    startActivityForResult(in, 123);
+                }
+
+            } else if (selectedPics.size() == 1) {
+                if (InstagramPicker.hasCrop){
+                    CropImage.activity(Uri.parse(selectedPics.get(0)))
+                            .setAspectRatio(x, y)
+                            .start(context, this);
+                }else {
+                    Intent in = new Intent(requireContext(), FilterActivity.class);
+                    FilterActivity.picAddress = Uri.parse(selectedPics.get(0));
+                    FilterActivity.position = 0;
+                    startActivityForResult(in, 123);
+                }
+
             } else if (selectedPics.size() > 1) {
                 Intent i = new Intent(getActivity(), MultiSelectActivity.class);
                 MultiSelectActivity.addresses = selectedPics;
@@ -272,6 +304,7 @@ public class GalleryFragment extends Fragment {
     }
 
     private void getPicturePaths() {
+        int pos=0;
         Uri allImagesuri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media._ID};
 
@@ -284,7 +317,10 @@ public class GalleryFragment extends Fragment {
                     do {
                         String datapath = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID))).toString();
                         GalleryModel model = new GalleryModel(datapath, false);
-
+                          try {
+                              Log.d("erererer",equals(BitmapFactory.decodeFile(datapath),BitmapFactory.decodeFile(selectedPics.get(pos++)))+"");
+                              model.setSelected(datapath.equals(selectedPics.get(pos++)));
+                          }catch (Exception e){}
                         data.add(0, model);
                         adapter.notifyItemInserted(data.size());
 
@@ -309,5 +345,14 @@ public class GalleryFragment extends Fragment {
 
     }
 
+    public boolean equals(Bitmap bitmap1, Bitmap bitmap2) {
+        ByteBuffer buffer1 = ByteBuffer.allocate(bitmap1.getHeight() * bitmap1.getRowBytes());
+        bitmap1.copyPixelsToBuffer(buffer1);
+
+        ByteBuffer buffer2 = ByteBuffer.allocate(bitmap2.getHeight() * bitmap2.getRowBytes());
+        bitmap2.copyPixelsToBuffer(buffer2);
+
+        return Arrays.equals(buffer1.array(), buffer2.array());
+    }
 
 }

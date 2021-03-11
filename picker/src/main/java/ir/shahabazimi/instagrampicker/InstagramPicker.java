@@ -13,6 +13,7 @@ import ir.shahabazimi.instagrampicker.classes.SingleListener;
 import ir.shahabazimi.instagrampicker.gallery.SelectActivity;
 
 import static ir.shahabazimi.instagrampicker.classes.Statics.INTENT_FILTER_ACTION_NAME;
+import static ir.shahabazimi.instagrampicker.gallery.ConstansKt.SELECTED_IMG;
 
 public class InstagramPicker {
 
@@ -22,8 +23,9 @@ public class InstagramPicker {
     public static int x;
     public static int y;
     public static boolean multiSelect;
+    public static boolean hasCrop;
+    public static boolean hasShowHeader;
     public static int numberOfPictures;
-
     public static List<String> addresses;
 
     public InstagramPicker(@NonNull Activity activity) {
@@ -42,7 +44,17 @@ public class InstagramPicker {
         activity.registerReceiver(br, new IntentFilter(INTENT_FILTER_ACTION_NAME));
     }
 
-    public void show(int CropXRatio, int CropYRatio, int numberOfPictures, MultiListener listener) {
+    public  InstagramPicker setHasCrop(boolean hasCrop) {
+        InstagramPicker.hasCrop = hasCrop;
+        return this;
+    }
+
+    public InstagramPicker setShowHeader(boolean hasShowHeader){
+        InstagramPicker.hasShowHeader=hasShowHeader;
+        return this;
+    }
+
+    public void show(int CropXRatio, int CropYRatio, int numberOfPictures,  MultiListener listener) {
         addresses = new ArrayList<>();
         if (numberOfPictures < 2)
             numberOfPictures = 2;
@@ -56,6 +68,7 @@ public class InstagramPicker {
 
         this.mListener = listener;
         Intent in = new Intent(activity, SelectActivity.class);
+       // in.putStringArrayListExtra(SELECTED_IMG,current);
         activity.startActivity(in);
         activity.registerReceiver(br, new IntentFilter(INTENT_FILTER_ACTION_NAME));
 
