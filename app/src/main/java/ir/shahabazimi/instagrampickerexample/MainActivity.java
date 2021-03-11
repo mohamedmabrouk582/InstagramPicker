@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements SingleListener, M
         InstagramPicker a = new InstagramPicker(MainActivity.this);
         //a.setShowHeader(true).setHasCrop(true);
         findViewById(R.id.main_button).setOnClickListener(w -> {
-             a.show(9,9,100,this);
+             a.show(9,9,this);
             // CropXRatio and CropYRatio are ratio for cropping for example if you want to limit the users to
             // only crop in 16:9 put 16,9
 

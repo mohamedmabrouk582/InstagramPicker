@@ -145,6 +145,7 @@ public class GalleryFragment extends Fragment {
                     e.printStackTrace();
                 }
                 selectedPic = address;
+                open();
             }
 
             @Override
@@ -167,6 +168,12 @@ public class GalleryFragment extends Fragment {
         getPicturePaths();
 
         return v;
+    }
+
+    private void open(){
+        CropImage.activity(Uri.parse(selectedPic))
+                .setAspectRatio(InstagramPicker.x, InstagramPicker.y)
+                .start(context,this);
     }
 
     @Override
