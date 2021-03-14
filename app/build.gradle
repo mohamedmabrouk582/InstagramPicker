@@ -27,4 +27,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation project(path: ':picker')
+    implementation  'com.fxn769:pix:1.5.6'
+
 }

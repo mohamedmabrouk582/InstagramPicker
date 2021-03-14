@@ -27,7 +27,9 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/focus_drawable"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/c_change"

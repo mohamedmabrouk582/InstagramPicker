@@ -156,7 +156,6 @@ public class FilterActivity extends AppCompatActivity implements FiltersListFrag
                 i.putExtra("position", position);
                 sendBroadcast(i);
                 FilterActivity.this.finish();
-                return true;
             } else {
                     try {
                         Bitmap b = finalImage;
@@ -180,9 +179,8 @@ public class FilterActivity extends AppCompatActivity implements FiltersListFrag
                         e.printStackTrace();
                     }
 
-                    return true;
-
             }
+            return true;
 
 
         }

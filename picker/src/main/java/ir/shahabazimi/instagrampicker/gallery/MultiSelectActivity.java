@@ -64,9 +64,9 @@ public class MultiSelectActivity extends AppCompatActivity {
             position = p;
             if (InstagramPicker.hasCrop){
                 CropImage.activity(Uri.parse(a))
-                    .setAspectRatio(4, 3)
+                    .setAspectRatio(InstagramPicker.x, InstagramPicker.y)
                     .start(this);
-            }else {
+            }else if (InstagramPicker.hasFilter){
                 Intent in = new Intent(this, FilterActivity.class);
                 FilterActivity.picAddress = Uri.parse(a);
                 FilterActivity.position = 0;
@@ -159,7 +159,6 @@ public class MultiSelectActivity extends AppCompatActivity {
                 FilterActivity.picAddress = resultUri;
                 FilterActivity.position = position;
                 startActivityForResult(in, 123);
-
             }
         }
 

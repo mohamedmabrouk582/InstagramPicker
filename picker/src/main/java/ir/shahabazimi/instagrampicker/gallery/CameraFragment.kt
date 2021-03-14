@@ -19,6 +19,8 @@ import androidx.fragment.app.FragmentActivity
 import com.theartofdev.edmodo.cropper.CropImage
 import ir.shahabazimi.instagrampicker.InstagramPicker
 import ir.shahabazimi.instagrampicker.R
+import ir.shahabazimi.instagrampicker.classes.BackgroundActivity
+import ir.shahabazimi.instagrampicker.classes.Statics
 import ir.shahabazimi.instagrampicker.filter.FilterActivity
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
@@ -60,6 +62,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         super.onViewCreated(view, savedInstanceState)
         val actionBar = (activity as AppCompatActivity).supportActionBar
         actionBar?.title = getString(R.string.instagrampicker_camera_title)
+        actionBar?.hide()
         ctx = requireContext()
         act = requireActivity()
 
@@ -121,7 +124,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             try {
                 cameraProvider.unbindAll()
 
-               val camera =  cameraProvider.bindToLifecycle(
+                val camera = cameraProvider.bindToLifecycle(
                         act, cameraSelector, preview, imageCapture)
 
                 c_viewFinder.afterMeasured {
@@ -131,7 +134,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                                 true
                             }
                             MotionEvent.ACTION_UP -> {
-                                c_focus.visibility=View.VISIBLE
+                                c_focus.visibility = View.VISIBLE
                                 val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
                                         c_viewFinder.width.toFloat(), c_viewFinder.height.toFloat()
                                 )
@@ -146,9 +149,10 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                                                 disableAutoCancel()
                                             }.build()
                                     )
-                                    c_focus.translationX=event.x-(c_focus.width/2)
-                                    c_focus.translationY=event.y-(c_focus.height/2)
-                                } catch (e: CameraInfoUnavailableException) { }
+                                    c_focus.translationX = event.x - (c_focus.width / 2)
+                                    c_focus.translationY = event.y - (c_focus.height / 2)
+                                } catch (e: CameraInfoUnavailableException) {
+                                }
                                 true
                             }
                             else -> false // Unhandled event.
@@ -202,11 +206,26 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     }
 
     private fun startCropping(f: File) {
-        val x = InstagramPicker.x
-        val y = InstagramPicker.y
-        CropImage.activity(Uri.fromFile(f))
-                .setAspectRatio(x, y)
-                .start(ctx, this)
+        when {
+            InstagramPicker.hasCrop || InstagramPicker.hasFilter  -> {
+                val x = InstagramPicker.x
+                val y = InstagramPicker.y
+                CropImage.activity(Uri.fromFile(f))
+                        .setAspectRatio(x, y)
+                        .start(ctx, this)
+            }
+            else -> {
+                if (InstagramPicker.addresses == null) {
+                    InstagramPicker.addresses = ArrayList()
+                }
+                InstagramPicker.addresses.add(Uri.fromFile(f).toString())
+                val intent = Intent(Statics.INTENT_FILTER_ACTION_NAME)
+                act.sendBroadcast(intent)
+                act.finish()
+                Objects.requireNonNull(BackgroundActivity.getInstance().activity)!!.finish()
+            }
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

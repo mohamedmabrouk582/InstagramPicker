@@ -39,10 +39,12 @@ import java.util.Objects;
 
 import ir.shahabazimi.instagrampicker.InstagramPicker;
 import ir.shahabazimi.instagrampicker.R;
+import ir.shahabazimi.instagrampicker.classes.BackgroundActivity;
 import ir.shahabazimi.instagrampicker.classes.TouchImageView;
 import ir.shahabazimi.instagrampicker.filter.FilterActivity;
 
 import static android.app.Activity.RESULT_OK;
+import static ir.shahabazimi.instagrampicker.classes.Statics.INTENT_FILTER_ACTION_NAME;
 
 
 public class GalleryFragment extends Fragment {
@@ -145,7 +147,7 @@ public class GalleryFragment extends Fragment {
                     e.printStackTrace();
                 }
                 selectedPic = address;
-                open();
+                open(selectedPic);
             }
 
             @Override
@@ -170,10 +172,27 @@ public class GalleryFragment extends Fragment {
         return v;
     }
 
-    private void open(){
-        CropImage.activity(Uri.parse(selectedPic))
-                .setAspectRatio(InstagramPicker.x, InstagramPicker.y)
-                .start(context,this);
+    private void open(String url){
+        if (InstagramPicker.hasCrop){
+            CropImage.activity(Uri.parse(url))
+                    .setAspectRatio(InstagramPicker.x, InstagramPicker.y)
+                    .start(context, this);
+        } else if (InstagramPicker.hasFilter){
+            Intent in = new Intent(requireContext(), FilterActivity.class);
+            FilterActivity.picAddress = Uri.parse(url);
+            FilterActivity.position = -1;
+            startActivityForResult(in, 123);
+            activity.finish();
+        } else {
+            if(InstagramPicker.addresses==null){
+                InstagramPicker.addresses = new ArrayList<>();
+            }
+            InstagramPicker.addresses.add(url);
+            activity.sendBroadcast(new Intent(INTENT_FILTER_ACTION_NAME));
+            activity.finish();
+            Objects.requireNonNull(BackgroundActivity.getInstance().getActivity()).finish();
+
+        }
     }
 
     @Override
@@ -205,10 +224,11 @@ public class GalleryFragment extends Fragment {
 
 
             if (!selectedPic.isEmpty()) {
-               // if (InstagramPicker.hasCrop){
-                     CropImage.activity(Uri.parse(selectedPic))
-                        .setAspectRatio(x, y)
-                        .start(context, this);
+                open(selectedPic);
+//                if (InstagramPicker.hasCrop){
+//                     CropImage.activity(Uri.parse(selectedPic))
+//                        .setAspectRatio(x, y)
+//                        .start(context, this);
 //                }else {
 //                    Intent in = new Intent(requireContext(), FilterActivity.class);
 //                    FilterActivity.picAddress = Uri.parse(selectedPic);
@@ -217,28 +237,28 @@ public class GalleryFragment extends Fragment {
 //                }
 
             } else if (selectedPics.size() == 1) {
-                //if (InstagramPicker.hasCrop){
-                    CropImage.activity(Uri.parse(selectedPics.get(0)))
-                            .setAspectRatio(x, y)
-                            .start(context, this);
+                open(selectedPics.get(0));
+//                if (InstagramPicker.hasCrop){
+//                    CropImage.activity(Uri.parse(selectedPics.get(0)))
+//                            .setAspectRatio(x, y)
+//                            .start(context, this);
 //                }else {
-//                    Intent i = new Intent(getActivity(), MultiSelectActivity.class);
-//                    MultiSelectActivity.addresses = selectedPics;
-//                    startActivity(i);
-//                    activity.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim);
-////                    Intent in = new Intent(requireContext(), FilterActivity.class);
-////                    FilterActivity.picAddress = Uri.parse(selectedPics.get(0));
-////                    FilterActivity.position = 0;
-////                    startActivityForResult(in, 123);
+////                    Intent i = new Intent(getActivity(), MultiSelectActivity.class);
+////                    MultiSelectActivity.addresses = selectedPics;
+////                    startActivity(i);
+////                    activity.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim);
+//                    Intent in = new Intent(requireContext(), FilterActivity.class);
+//                    FilterActivity.picAddress = Uri.parse(selectedPics.get(0));
+//                    FilterActivity.position = 0;
+//                    startActivityForResult(in, 123);
 //                }
 
             } else if (selectedPics.size() > 1) {
-                Intent i = new Intent(getActivity(), MultiSelectActivity.class);
-                MultiSelectActivity.addresses = selectedPics;
-                startActivity(i);
-                activity.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim);
-
-            }
+                    Intent i = new Intent(getActivity(), MultiSelectActivity.class);
+                    MultiSelectActivity.addresses = selectedPics;
+                    startActivity(i);
+                    activity.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim);
+             }
 
             return true;
         }

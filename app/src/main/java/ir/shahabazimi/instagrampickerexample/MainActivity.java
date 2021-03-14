@@ -1,7 +1,10 @@
 package ir.shahabazimi.instagrampickerexample;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +24,9 @@ public class MainActivity extends AppCompatActivity implements SingleListener, M
         setContentView(R.layout.activity_main);
         InstagramPicker a = new InstagramPicker(MainActivity.this);
         //a.setShowHeader(true).setHasCrop(true);
+       // a.setHasFilter(true);
         findViewById(R.id.main_button).setOnClickListener(w -> {
-             a.show(9,9,this);
+             a.show(9,9,100,this);
             // CropXRatio and CropYRatio are ratio for cropping for example if you want to limit the users to
             // only crop in 16:9 put 16,9
 
@@ -40,14 +44,23 @@ public class MainActivity extends AppCompatActivity implements SingleListener, M
 
     }
 
+
+
     @Override
-    public void selectedPic(String address) {
-        Log.d("tftftft",address);
-        Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
+    public void selectedPic(String address,boolean fromCamera) {
+        Toast.makeText(this, fromCamera+"", Toast.LENGTH_SHORT).show();
+        ImageView viewById = findViewById(R.id.imageView);
+
+        viewById.setImageURI(Uri.parse(address));
     }
 
     @Override
-    public void selectedPics(List<String> addresses) {
+    public void selectedPics(List<String> addresses,boolean fromCamera) {
+        ImageView viewById = findViewById(R.id.imageView);
+
+        viewById.setImageURI(Uri.parse(addresses.get(0)));
+
+        Toast.makeText(this, addresses.toString(), Toast.LENGTH_SHORT).show();
 
     }
 }

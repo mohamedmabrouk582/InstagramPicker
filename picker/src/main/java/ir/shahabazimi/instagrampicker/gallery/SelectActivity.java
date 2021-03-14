@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
+import ir.shahabazimi.instagrampicker.InstagramPicker;
 import ir.shahabazimi.instagrampicker.classes.BackgroundActivity;
 import ir.shahabazimi.instagrampicker.classes.MySharedPreference;
 import ir.shahabazimi.instagrampicker.R;
@@ -66,13 +67,14 @@ public class SelectActivity extends AppCompatActivity {
 
 
     private void openCamera() {
+        InstagramPicker.fromCamera=true;
         getSupportFragmentManager().beginTransaction().replace(R.id.select_container, new CameraFragment())
                 .commit();
 
     }
 
     private void openGallery() {
-
+        InstagramPicker.fromCamera=false;
         getSupportFragmentManager().beginTransaction().replace(R.id.select_container,GalleryFragment.getInstance(selectedUrls))
                 .commit();
     }
