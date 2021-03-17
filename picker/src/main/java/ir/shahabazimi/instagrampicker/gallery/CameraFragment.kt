@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
@@ -70,7 +71,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         ctx = requireContext()
         act = requireActivity()
         with(view.findViewById<RecyclerView>(R.id.camera_rcv)){
-            layoutManager=LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+            layoutManager=LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter=cameraAdapter
         }
         with(view.findViewById<ImageView>(R.id.load)){
@@ -78,15 +79,13 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 visibility=View.GONE
             }
           setOnClickListener {
-                        if (InstagramPicker.addresses == null) {
-                            InstagramPicker.addresses = ArrayList()
-                        }
-                        // InstagramPicker.addresses.add(Uri.fromFile(f).toString())
-                        val intent = Intent(Statics.INTENT_FILTER_ACTION_NAME)
-                        act.sendBroadcast(intent)
-                        act.finish()
-                        Objects.requireNonNull(BackgroundActivity.getInstance().activity)!!.finish()
-                    }
+              if (cameraAdapter.data.isEmpty()) {
+                  Toast.makeText(requireContext(), "Take At least one pic", Toast.LENGTH_SHORT).show()
+               return@setOnClickListener
+              }
+              InstagramPicker.addresses = cameraAdapter.data.map { Uri.fromFile(it).toString() }
+              loadMultiPic()
+          }
         }
         startCamera(CameraSelector.DEFAULT_BACK_CAMERA)
         c_capture.setOnClickListener { takePhoto() }
@@ -222,14 +221,35 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             }
 
             override fun onImageSaved(output: OutputFileResults) {
-                if (InstagramPicker.multiSelect){
+                if (InstagramPicker.multiSelect) {
                     cameraAdapter.addItem(photoFile)
-                    InstagramPicker.addresses.add(Uri.fromFile(photoFile).toString())
-                }else{
+                    //InstagramPicker.addresses.add(Uri.fromFile(photoFile).toString())
+                } else {
                     startCropping(photoFile)
                 }
             }
         })
+    }
+
+    private fun loadMultiPic() {
+        when {
+            InstagramPicker.hasCrop || InstagramPicker.hasFilter -> {
+                val i = Intent(activity, MultiSelectActivity::class.java)
+                MultiSelectActivity.addresses = InstagramPicker.addresses
+                startActivity(i)
+                activity!!.overridePendingTransition(R.anim.bottom_up_anim, R.anim.bottom_down_anim)
+            }
+            else -> {
+                if (InstagramPicker.addresses == null) {
+                    InstagramPicker.addresses = ArrayList()
+                }
+                // InstagramPicker.addresses.add(Uri.fromFile(f).toString())
+                val intent = Intent(Statics.INTENT_FILTER_ACTION_NAME)
+                act.sendBroadcast(intent)
+                act.finish()
+                Objects.requireNonNull(BackgroundActivity.getInstance().activity)!!.finish()
+            }
+        }
     }
 
     private fun startCropping(f: File) {
@@ -280,5 +300,4 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
-
 }

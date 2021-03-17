@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ir.shahabazimi.instagrampicker.R
 import java.io.File
 
-class CameraAdapter(val listener:CameraListener) : RecyclerView.Adapter<CameraAdapter.Holder>() {
+class CameraAdapter() : RecyclerView.Adapter<CameraAdapter.Holder>() {
     var data:ArrayList<File> = ArrayList()
     set(value) {
         field=value
@@ -22,12 +22,21 @@ class CameraAdapter(val listener:CameraListener) : RecyclerView.Adapter<CameraAd
         notifyDataSetChanged()
         //notifyItemInserted(data.size)
     }
+
+    fun deleteItem(pos:Int){
+        data.removeAt(pos)
+        notifyItemRemoved(pos)
+    }
     inner class Holder(val itemView:View) : RecyclerView.ViewHolder(itemView){
         fun bind(item:File){
             //viewBinding.address=item
             itemView.findViewById<ImageView>(R.id.imageView).apply {
                 setImageURI(Uri.fromFile(item))
+                setOnClickListener {
+                    deleteItem(adapterPosition)
+                }
             }
+
           //  viewBinding.imageView.setImageURI(Uri.fromFile(item))
         }
     }
