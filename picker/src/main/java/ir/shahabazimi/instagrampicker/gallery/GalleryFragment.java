@@ -83,6 +83,7 @@ public class GalleryFragment extends Fragment {
         ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
         assert actionBar != null;
         actionBar.setTitle(getString(R.string.instagrampicker_gallery_title));
+        actionBar.show();
         setHasOptionsMenu(true);
         try {
             selectedPics= getArguments().getStringArrayList("SELECTED_IMG");
