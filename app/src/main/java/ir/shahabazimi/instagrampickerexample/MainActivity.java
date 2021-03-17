@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SingleListener, M
         InstagramPicker a = new InstagramPicker(MainActivity.this);
         //a.setShowHeader(true).setHasCrop(true);
         //a.setHasFilter(true);
+        //a.setMultiCamera(true);
         findViewById(R.id.main_button).setOnClickListener(w -> {
              a.show(9,9,100,this);
             // CropXRatio and CropYRatio are ratio for cropping for example if you want to limit the users to
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements SingleListener, M
 
         viewById.setImageURI(Uri.parse(addresses.get(0)));
 
-        Toast.makeText(this, addresses.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, addresses.toString()+":"+fromCamera, Toast.LENGTH_SHORT).show();
 
     }
 }

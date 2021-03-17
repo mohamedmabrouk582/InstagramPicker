@@ -75,7 +75,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             adapter=cameraAdapter
         }
         with(view.findViewById<ImageView>(R.id.load)){
-            if (!InstagramPicker.multiSelect){
+            if (!InstagramPicker.multiCamera){
                 visibility=View.GONE
             }
           setOnClickListener {
@@ -221,7 +221,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             }
 
             override fun onImageSaved(output: OutputFileResults) {
-                if (InstagramPicker.multiSelect) {
+                if (InstagramPicker.multiCamera) {
                     cameraAdapter.addItem(photoFile)
                     //InstagramPicker.addresses.add(Uri.fromFile(photoFile).toString())
                 } else {

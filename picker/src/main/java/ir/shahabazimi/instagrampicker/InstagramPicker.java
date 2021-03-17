@@ -24,7 +24,7 @@ public class InstagramPicker {
     public static int y;
     public static boolean multiSelect;
     public static boolean hasCrop;
-    public static boolean hasShowHeader,hasFilter,fromCamera;
+    public static boolean hasShowHeader,hasFilter,fromCamera,multiCamera;
     public static int numberOfPictures;
     public static List<String> addresses;
 
@@ -46,6 +46,10 @@ public class InstagramPicker {
 
     public  InstagramPicker setHasCrop(boolean hasCrop) {
         InstagramPicker.hasCrop = hasCrop;
+        return this;
+    }
+    public  InstagramPicker setMultiCamera(boolean multiCamera) {
+        InstagramPicker.multiCamera = multiCamera;
         return this;
     }
 
@@ -83,9 +87,9 @@ public class InstagramPicker {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (multiSelect)
-                mListener.selectedPics(addresses,fromCamera);
+                mListener.selectedPics(addresses, !multiCamera && fromCamera);
             else
-                sListener.selectedPic(addresses.get(0),fromCamera);
+                sListener.selectedPic(addresses.get(0),!multiCamera && fromCamera);
             activity.unregisterReceiver(br);
         }
     };
